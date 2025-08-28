@@ -60,7 +60,73 @@ export const GenerationHistory: React.FC<GenerationHistoryProps> = ({
         )}
       </CardHeader>
       <CardContent>
-        
+        {generations.length === 0 ? (
+          <div className="text-center py-8">
+            <History className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
+            <p className="text-sm text-muted-foreground">No generations yet</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Your recent creations will appear here
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {generations.map((generation) => (
+              <div
+                key={generation.id}
+                className="group p-3 bg-card-secondary border border-card-border rounded-lg hover:bg-hover transition-colors cursor-pointer"
+                onClick={() => onRestoreGeneration(generation)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onRestoreGeneration(generation);
+                  }
+                }}
+                aria-label={`Restore generation: ${generation.prompt.substring(0, 50)}...`}
+              >
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0">
+                    <img
+                      src={generation.imageUrl}
+                      alt="Generated"
+                      className="w-16 h-16 object-cover rounded-md border border-card-border"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <div className="flex items-start justify-between">
+                      <p className="text-sm text-foreground line-clamp-2 leading-relaxed">
+                        {generation.prompt}
+                      </p>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity ml-2 flex-shrink-0"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRestoreGeneration(generation);
+                        }}
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Badge 
+                        variant="outline" 
+                        className="text-xs bg-primary/5 text-primary border-primary/20"
+                      >
+                        {getStyleLabel(generation.style)}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">
+                        {formatDate(generation.createdAt)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -16,7 +16,86 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   selectedImage,
   onClearImage,
 }) => {
- 
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const processImage = useCallback(async (file: File) => {
+    if (file.size > MAX_FILE_SIZE) {
+   
+      return;
+    }
+
+    if (!file.type.match(/^image\/(png|jpe?g)$/)) {
+    
+      return;
+    }
+
+    try {
+      const dataUrl = await resizeImageIfNeeded(file);
+      onImageSelect(file, dataUrl);
+    } catch (error) {
+    
+    }
+  }, [onImageSelect]);
+
+  const resizeImageIfNeeded = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        reject(new Error('Failed to get canvas context'));
+        return;
+      }
+
+      img.onload = () => {
+        let { width, height } = img;
+        
+        if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+          const ratio = Math.min(MAX_DIMENSION / width, MAX_DIMENSION / height);
+          width *= ratio;
+          height *= ratio;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        resolve(canvas.toDataURL(file.type, 0.9));
+      };
+
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      processImage(files[0]);
+    }
+  }, [processImage]);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  }, []);
+
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      processImage(files[0]);
+    }
+  }, [processImage]);
+
   return (
     <div className="space-y-4">
       {selectedImage ? (
@@ -39,8 +118,12 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         </div>
       ) : (
         <div
-          className={`upload-zone rounded-lg p-8 text-center cursor-pointer transition-all duration-300 `}
-
+          className={`upload-zone rounded-lg p-8 text-center cursor-pointer transition-all duration-300 ${
+            isDragOver ? 'dragover' : ''
+          }`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
           onClick={() => document.getElementById('image-upload')?.click()}
         >
           <div className="flex flex-col items-center space-y-4">
@@ -70,6 +153,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         id="image-upload"
         type="file"
         accept="image/png,image/jpeg,image/jpg"
+        onChange={handleFileSelect}
         className="hidden"
         aria-label="Upload image file"
       />

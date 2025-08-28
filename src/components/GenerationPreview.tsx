@@ -38,7 +38,7 @@ export const GenerationPreview: React.FC<GenerationPreviewProps> = ({
               <img
                 src={image.dataUrl}
                 alt="Source"
-                className="w-full h-32 object-cover"
+                className="w-full h-56 object-contain"
               />
             </div>
           ) : (

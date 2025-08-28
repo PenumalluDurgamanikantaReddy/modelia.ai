@@ -119,7 +119,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             <img
               src={selectedImage.dataUrl}
               alt="Selected image"
-              className="w-full h-64 object-cover"
+              className="w-full h-64 object-contain"
             />
           </div>
           <Button
@@ -133,7 +133,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         </div>
       ) : (
         <div
-          className={`upload-zone rounded-lg p-8 text-center cursor-pointer transition-all duration-300 ${
+          className={`upload-zone rounded-lg p-8  text-center cursor-pointer transition-all duration-300 ${
             isDragOver ? 'dragover' : ''
           }`}
           onDrop={handleDrop}

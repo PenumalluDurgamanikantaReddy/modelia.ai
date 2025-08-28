@@ -87,11 +87,11 @@ class MockApiService {
   private generateMockImageUrl(request: GenerateRequest): string {
    
     const styleMapping: Record<string, string> = {
-      editorial: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop',
-      streetwear: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&h=600&fit=crop',
-      vintage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
-      minimalist: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=800&h=600&fit=crop',
-      cinematic: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&h=600&fit=crop',
+      editorial: 'https://res.cloudinary.com/dozxkqzhc/image/upload/v1756383612/editorial_stevesmith_c0eutc.pngp',
+      streetwear: 'https://res.cloudinary.com/dozxkqzhc/image/upload/v1756384094/streetwear_stevesmith_2_hzgvma.png',
+      vintage: 'https://res.cloudinary.com/dozxkqzhc/image/upload/v1756383612/vintage_stevemith_re0fam.png',
+      minimalist: 'https://res.cloudinary.com/dozxkqzhc/image/upload/v1756383615/minimalist_stavesmith_nnvltz.png',
+      cinematic: 'https://res.cloudinary.com/dozxkqzhc/image/upload/v1756383612/cinematic_stevesmith_avsfm1.png',
     };
 
     return styleMapping[request.style] || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop';

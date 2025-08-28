@@ -27,7 +27,7 @@ export const GenerationPreview: React.FC<GenerationPreviewProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-      
+        {/* Image Preview */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm font-medium text-foreground">
             <ImageIcon className="h-4 w-4" />
@@ -51,7 +51,7 @@ export const GenerationPreview: React.FC<GenerationPreviewProps> = ({
           )}
         </div>
 
-      
+        {/* Prompt Preview */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm font-medium text-foreground">
             <Type className="h-4 w-4" />
@@ -66,7 +66,7 @@ export const GenerationPreview: React.FC<GenerationPreviewProps> = ({
           </div>
         </div>
 
-    
+        {/* Style Preview */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm font-medium text-foreground">
             <Palette className="h-4 w-4" />
@@ -83,7 +83,7 @@ export const GenerationPreview: React.FC<GenerationPreviewProps> = ({
           )}
         </div>
 
-        
+        {/* Completion Status */}
         <div className="pt-2 border-t border-card-border">
           <div className="flex items-center justify-between">
             <span className="text-sm text-foreground">Ready to generate:</span>

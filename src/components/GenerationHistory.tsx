@@ -67,19 +67,32 @@ export const GenerationHistory: React.FC<GenerationHistoryProps> = ({
           </div>
         ) : (
           <div className="space-y-3">
-            {generations.map((generation) => (
+            {generations.map((generation,idx) => (
               <div
                 key={generation.id}
                 className="group p-3 bg-card-secondary border border-card-border rounded-lg hover:bg-hover transition-colors cursor-pointer"
                 onClick={() => onRestoreGeneration(generation)}
                 role="button"
+                  data-generation-item
+
                 tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onRestoreGeneration(generation);
-                  }
-                }}
+              onKeyDown={(e) => {
+  if (e.code === "ArrowDown" && idx < generations.length - 1) {
+    e.preventDefault();
+    const next = document.querySelectorAll<HTMLDivElement>("[data-generation-item]")[idx + 1];
+    next?.focus();
+  } else if (e.code === "ArrowUp" && idx > 0) {
+    e.preventDefault();
+    const prev = document.querySelectorAll<HTMLDivElement>("[data-generation-item]")[idx - 1];
+    prev?.focus();
+  }
+
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    onRestoreGeneration(generation);
+  }
+}}
+
                 aria-label={`Restore generation: ${generation.prompt.substring(0, 50)}...`}
               >
                 <div className="flex gap-3">

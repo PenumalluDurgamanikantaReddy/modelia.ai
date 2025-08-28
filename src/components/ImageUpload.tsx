@@ -65,6 +65,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       img.onload = () => {
         let { width, height } = img;
         
+        // Check if resizing is needed
         if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
           const ratio = Math.min(MAX_DIMENSION / width, MAX_DIMENSION / height);
           width *= ratio;

@@ -4,41 +4,81 @@ import { PromptInput } from './PromptInput';
 import { GenerationPreview } from './GenerationPreview';
 import { GenerationHistory, Generation } from './GenerationHistory';
 import { GenerateButton } from './GenerateButton';
-
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { mockApiService, GenerateRequest } from '@/services/mockApi';
+import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sparkles } from 'lucide-react';
 
+const MAX_HISTORY = 5;
 
 export const AIStudio: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<{ file: File; dataUrl: string } | null>(null);
   const [prompt, setPrompt] = useState('');
   const [style, setStyle] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  
+  const [generations, setGenerations] = useLocalStorage<Generation[]>('ai-studio-generations', []);
+  const { toast } = useToast();
 
   const canGenerate = selectedImage && prompt.trim() && style;
 
   const handleImageSelect = useCallback((file: File, dataUrl: string) => {
     setSelectedImage({ file, dataUrl });
   }, []);
-  
 
   const handleClearImage = useCallback(() => {
     setSelectedImage(null);
   }, []);
 
-  const handleGenerate = useCallback( () => {
+  const handleGenerate = useCallback(async () => {
     if (!canGenerate || !selectedImage) return;
 
-   
-  }, [canGenerate, selectedImage, prompt, style,]);
+    setIsGenerating(true);
+    
+    try {
+      const request: GenerateRequest = {
+        imageDataUrl: selectedImage.dataUrl,
+        prompt: prompt.trim(),
+        style,
+      };
+
+      const response = await mockApiService.generateImage(request);
+      
+      // Add to history (keep only last 5)
+      setGenerations(prev => {
+        const updated = [response, ...prev].slice(0, MAX_HISTORY);
+        return updated;
+      });
+
+      toast({
+        title: "Generation complete!",
+        description: "Your image has been generated successfully.",
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message === 'AbortError') {
+        toast({
+          title: "Generation cancelled",
+          description: "The generation was stopped.",
+        });
+      } else {
+        toast({
+          title: "Generation failed",
+          description: error instanceof Error ? error.message : "An unexpected error occurred.",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsGenerating(false);
+    }
+  }, [canGenerate, selectedImage, prompt, style, setGenerations, toast]);
 
   const handleAbort = useCallback(() => {
-    
+    mockApiService.abortGeneration();
     setIsGenerating(false);
   }, []);
 
   const handleRestoreGeneration = useCallback((generation: Generation) => {
+    // Create a mock file and dataUrl for the restored generation
     setSelectedImage({
       file: new File([], 'restored-image.jpg', { type: 'image/jpeg' }),
       dataUrl: generation.imageUrl,
@@ -46,15 +86,20 @@ export const AIStudio: React.FC = () => {
     setPrompt(generation.prompt);
     setStyle(generation.style);
 
-   
-  }, []);
+    toast({
+      title: "Generation restored",
+      description: "Previous generation settings have been loaded.",
+    });
+  }, [toast]);
 
   const handleClearHistory = useCallback(() => {
- 
-  }, []);
+    setGenerations([]);
+    toast({
+      title: "History cleared",
+      description: "All generation history has been removed.",
+    });
+  }, [setGenerations, toast]);
 
-
-  console.log(selectedImage)
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -66,7 +111,7 @@ export const AIStudio: React.FC = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold gradient-text">AI Studio</h1>
-              <p className="text-sm text-muted-foreground">Transform your images with AI</p>
+              <p className="text-sm text-muted-foreground">Transform your images with Modelia AI</p>
             </div>
           </div>
         </div>
@@ -134,7 +179,8 @@ export const AIStudio: React.FC = () => {
 
             {/* History */}
             <GenerationHistory
-             onRestoreGeneration={handleRestoreGeneration}
+              generations={generations}
+              onRestoreGeneration={handleRestoreGeneration}
               onClearHistory={handleClearHistory}
             />
           </div>

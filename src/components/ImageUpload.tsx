@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 interface ImageUploadProps {
   onImageSelect: (file: File, dataUrl: string) => void;
@@ -17,15 +18,24 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   onClearImage,
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
+  const { toast } = useToast();
 
   const processImage = useCallback(async (file: File) => {
     if (file.size > MAX_FILE_SIZE) {
-   
+      toast({
+        title: "File too large",
+        description: "Please select an image under 10MB.",
+        variant: "destructive",
+      });
       return;
     }
 
     if (!file.type.match(/^image\/(png|jpe?g)$/)) {
-    
+      toast({
+        title: "Invalid file type",
+        description: "Please select a PNG or JPEG image.",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -33,9 +43,13 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       const dataUrl = await resizeImageIfNeeded(file);
       onImageSelect(file, dataUrl);
     } catch (error) {
-    
+      toast({
+        title: "Error processing image",
+        description: "Failed to process the selected image.",
+        variant: "destructive",
+      });
     }
-  }, [onImageSelect]);
+  }, [onImageSelect, toast]);
 
   const resizeImageIfNeeded = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {

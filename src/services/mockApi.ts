@@ -87,14 +87,14 @@ class MockApiService {
   private generateMockImageUrl(request: GenerateRequest): string {
    
     const styleMapping: Record<string, string> = {
-      editorial: 'https://res.cloudinary.com/dozxkqzhc/image/upload/v1756383612/editorial_stevesmith_c0eutc.pngp',
+      editorial: 'https://res.cloudinary.com/dozxkqzhc/image/upload/v1756383612/editorial_stevesmith_c0eutc.png',
       streetwear: 'https://res.cloudinary.com/dozxkqzhc/image/upload/v1756384094/streetwear_stevesmith_2_hzgvma.png',
       vintage: 'https://res.cloudinary.com/dozxkqzhc/image/upload/v1756383612/vintage_stevemith_re0fam.png',
       minimalist: 'https://res.cloudinary.com/dozxkqzhc/image/upload/v1756383615/minimalist_stavesmith_nnvltz.png',
       cinematic: 'https://res.cloudinary.com/dozxkqzhc/image/upload/v1756383612/cinematic_stevesmith_avsfm1.png',
     };
 
-    return styleMapping[request.style] || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop';
+    return styleMapping[request.style] || 'https://res.cloudinary.com/dozxkqzhc/image/upload/v1756383612/editorial_stevesmith_c0eutc.png';
   }
 }
 
